@@ -1,0 +1,39 @@
+[1] "adult_data 2023-11-21 15:05:08"
+[1] "random effects model --"
+Review:     HHV-6 and Adult Overall Mortality
+
+                         OR             95%-CI %W(random)
+Aoki 2015            1.8010 [1.0652;   3.0450]       17.0
+Cirrone 2016         0.5737 [0.2088;   1.5762]       12.7
+Drobyski 1993       21.0000 [0.8555; 515.4963]        3.1
+Dzieciątkowski 2010  0.8182 [0.0207;  32.2660]        2.4
+Gotoh 2014           9.7500 [2.4603;  38.6389]        9.8
+Kadakia 1996         0.5600 [0.1096;   2.8623]        8.2
+Kitamura 2008        5.2500 [0.3998;  68.9456]        4.4
+Lee 2022             1.7711 [1.0144;   3.0924]       16.8
+Miranda-Silva 2023  10.0000 [0.9939; 100.6118]        5.2
+Noviello M 2023      1.4622 [0.8331;   2.5661]       16.7
+Takatsuka 2001       4.0000 [0.2115;  75.6593]        3.6
+
+Number of studies combined: k = 11
+Number of observations: o = 1000
+Number of events: e = 385
+
+                         OR           95%-CI    t p-value
+Random effects model 2.0070 [0.9982; 4.0354] 2.22  0.0505
+
+Quantifying heterogeneity:
+ tau^2 = 0.5053 [0.0000; 3.3833]; tau = 0.7108 [0.0000; 1.8394]
+ I^2 = 46.2% [0.0%; 73.3%]; H = 1.36 [1.00; 1.93]
+
+Test of heterogeneity:
+     Q d.f. p-value
+ 18.59   10  0.0459
+
+Details on meta-analytical method:
+- Mantel-Haenszel method (without continuity correction)
+- Paule-Mandel estimator for tau^2
+- Q-Profile method for confidence interval of tau^2 and tau
+- Hartung-Knapp (HK) adjustment for random effects model (df = 10)
+- Continuity correction of 0.5 in studies with zero cell frequencies
+  (only used to calculate individual study results)
