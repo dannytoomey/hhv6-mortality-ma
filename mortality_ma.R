@@ -1,15 +1,7 @@
 # great book on meta-analyses - https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/
 # good reference for interpreting bayesian results - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10021079/
 
-library(readxl)
-library(esc)
-library(meta)
-library(dplyr)
-library(metafor)
-library(grid)
-library(brms)
-library(baggr)
-library(ggplot2)
+lapply(c("readxl","esc","meta","dplyr","metafor","grid","brms","baggr","ggplot2"),require,character.only=TRUE)
 
 #options(error = function() traceback(3))
 options(mc.cores = parallel::detectCores())
@@ -19,39 +11,11 @@ excel <- data.frame(excel)
 excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died")]
 excel <- excel[excel$`Excluded.from.analysis.`=="No",]
 
-args <- commandArgs(trailingOnly = TRUE)
-if(length(args)<1){
-	stop("
-Please indicate whether you would like to analyze
-studies that systematically tested for HHV-6 or not.
+save_path <- paste0("local_results/",gsub(":",";",substr(Sys.time(),1,19)),"")	
 
-Options are:
-  -sys    : Analyze studies that systematically monitored 
-            for HHV-6.
-  -nonsys : Analyze studies that did NOT systematically monitor 
-            for HHV-6.
-  -all    : Analyze systematic and non-systematically monitored 
-            studies together.
-
-These flags are used as standard command line flags, so that a command
-generating an analysis for systematically monitored studies on a UNIX OS
-would be:
-  Rscript mortality_ma.R -sys
-
-")
+if(!file.exists("local_results/")){
+	dir.create("local_results/")
 }
-if(args[1] == "-all"){
-	save_path <- paste0("",Sys.Date()," all data")	
-}
-if(args[1] == "-sys"){
-	save_path <- paste0("",Sys.Date()," systematic")
-	excel <- excel[excel$`HHV6.Monitoring`=="Systematic",]
-}
-if(args[1] == "-nonsys"){
-	save_path <- paste0("",Sys.Date()," non systematic")
-	excel <- excel[excel$`HHV6.Monitoring`!="Systematic",]
-}
-
 if(!file.exists(save_path)){
 	dir.create(save_path)
 }
@@ -82,9 +46,9 @@ for(i in list){
 		bayes_pdf <- "/plots/1 - Bayes HHV-6 OM.pdf"
 		text_save <- "/details/1 - om model details.txt"
 		rma_pdf_width <- 10
-		rma_pdf_height <- log(dim(data)[1],9)*5.5
+		rma_pdf_height <- log(dim(data)[1],9)*5.75
 		bayes_pdf_width <- 8
-		bayes_pdf_height <- log(dim(data)[1],9)*5.5
+		bayes_pdf_height <- log(dim(data)[1],9)*5.75
 	}
 	if(i == "rm_data"){
 		data <- rm_data
