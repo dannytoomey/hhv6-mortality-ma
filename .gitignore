@@ -1,4 +1,7 @@
 .DS_Store
 *.docx
 *.pdf
-!/Model details and plots 2023-11-21/plots/*.pdf
+*.xlsx
+local_results/
+!/Model details and plots 2024-01-04/plots/*.pdf
+!DT simplified datasheet 2023 update.xlsx
