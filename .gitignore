@@ -3,5 +3,5 @@
 *.pdf
 *.xlsx
 local_results/
-!/Model details and plots 2024-01-04/plots/*.pdf
+!/Model details and plots 2024-01-11/plots/*.pdf
 !DT simplified datasheet 2023 update.xlsx
