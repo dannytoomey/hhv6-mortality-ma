@@ -6,7 +6,7 @@ lapply(c("readxl","esc","meta","dplyr","metafor","grid","brms","baggr","ggplot2"
 #options(error = function() traceback(3))
 options(mc.cores = parallel::detectCores())
 
-excel = read_excel('DT simplified datasheet 2023 update.xlsx',sheet="Included studies 2023 update")
+excel = read_excel('Full Dataset - Mortality after HCT and HHV-6.xlsx',sheet="Included studies 2023 update")
 excel <- data.frame(excel)
 excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died")]
 excel <- excel[excel$`Excluded.from.analysis.`=="No",]
