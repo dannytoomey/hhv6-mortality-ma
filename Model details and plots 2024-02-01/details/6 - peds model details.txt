@@ -1,4 +1,4 @@
-[1] "peds_data 2024-01-11 14:53:42.435525"
+[1] "peds_data 2024-02-01 15:56:44.337686"
 [1] "random effects model --"
 Review:     HHV-6 and Pediatric Overall Mortality
 
@@ -38,17 +38,17 @@ Model type: Rubin model with aggregate data
 Pooling of effects: partial 
 
 Aggregate treatment effect (on logOR), 7 groups:
-Hypermean (tau) =  0.36 with 95% interval -0.37 to 0.97 
-Hyper-SD (sigma_tau) = 0.452 with 95% interval 0.015 to 1.714 
-Total pooling (1 - I^2) = 0.677 with 95% interval 0.093 to 0.999 
+Hypermean (tau) =  0.38 with 95% interval -0.30 to 0.98 
+Hyper-SD (sigma_tau) = 0.433 with 95% interval 0.015 to 1.549 
+Total pooling (1 - I^2) = 0.68 with 95% interval 0.11 to 1.00 
 
 Group-specific treatment effects:
                    mean   sd   2.5%  50% 97.5% pooling
-Admiraal 2017      0.52 0.25  0.057 0.51  1.03    0.48
-Alexandersson 2019 0.19 0.68 -1.614 0.31  1.20    0.94
-Allen 2001         0.51 0.62 -0.577 0.45  2.06    0.94
-de Pagter 2008     0.52 0.40 -0.228 0.48  1.43    0.72
-de Pagter 2012     0.36 0.38 -0.465 0.38  1.11    0.71
-Toriumi 2014       0.16 0.40 -0.769 0.22  0.81    0.66
+Admiraal 2017      0.52 0.25  0.062 0.51  1.03    0.49
+Alexandersson 2019 0.21 0.66 -1.462 0.32  1.21    0.94
+Allen 2001         0.51 0.61 -0.585 0.45  2.00    0.94
+de Pagter 2008     0.51 0.40 -0.222 0.48  1.42    0.73
+de Pagter 2012     0.36 0.38 -0.465 0.37  1.11    0.72
+Toriumi 2014       0.16 0.40 -0.749 0.22  0.80    0.66
 Verhoeven 2015     0.38 0.30 -0.231 0.39  0.97    0.59
 

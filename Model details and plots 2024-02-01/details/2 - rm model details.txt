@@ -1,4 +1,4 @@
-[1] "rm_data 2024-01-11 14:53:24.93885"
+[1] "rm_data 2024-02-01 15:56:26.367515"
 [1] "random effects model --"
 Review:     HHV-6 and RM
 
@@ -38,17 +38,17 @@ Model type: Rubin model with aggregate data
 Pooling of effects: partial 
 
 Aggregate treatment effect (on logOR), 7 groups:
-Hypermean (tau) =  -0.2 with 95% interval -1.1 to 0.8 
-Hyper-SD (sigma_tau) = 0.646 with 95% interval 0.021 to 2.512 
-Total pooling (1 - I^2) = 0.567 with 95% interval 0.045 to 0.998 
+Hypermean (tau) =  -0.24 with 95% interval -1.16 to 0.49 
+Hyper-SD (sigma_tau) = 0.621 with 95% interval 0.021 to 2.278 
+Total pooling (1 - I^2) = 0.576 with 95% interval 0.054 to 0.999 
 
 Group-specific treatment effects:
                  mean   sd  2.5%    50% 97.5% pooling
-Aoki 2015      -0.172 0.26 -0.68 -0.173  0.33    0.39
-Baker 2016     -0.663 0.99 -3.37 -0.387  0.61    0.88
-de Pagter 2008 -0.083 0.61 -1.28 -0.124  1.31    0.78
-Han 2020        0.035 0.54 -0.89 -0.046  1.40    0.68
-Kadakia 1996   -0.582 0.76 -2.70 -0.395  0.50    0.78
-Zerr DM 2012    0.107 0.40 -0.57  0.060  1.00    0.52
-Zhou 2019      -0.357 0.29 -0.96 -0.340  0.17    0.41
+Aoki 2015      -0.177 0.26 -0.68 -0.178  0.33    0.40
+Baker 2016     -0.626 0.94 -3.16 -0.380  0.61    0.89
+de Pagter 2008 -0.082 0.60 -1.26 -0.128  1.31    0.79
+Han 2020        0.021 0.52 -0.90 -0.050  1.24    0.69
+Kadakia 1996   -0.554 0.71 -2.39 -0.388  0.48    0.79
+Zerr DM 2012    0.100 0.40 -0.57  0.053  0.98    0.53
+Zhou 2019      -0.361 0.29 -0.97 -0.345  0.17    0.42
 

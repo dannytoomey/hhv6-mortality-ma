@@ -1,4 +1,4 @@
-[1] "adult_data 2024-01-11 14:53:50.896588"
+[1] "adult_data 2024-02-01 15:56:52.928896"
 [1] "random effects model --"
 Review:     HHV-6 and Adult Overall Mortality
 
@@ -37,17 +37,17 @@ Model type: Rubin model with aggregate data
 Pooling of effects: partial 
 
 Aggregate treatment effect (on logOR), 7 groups:
-Hypermean (tau) =  0.45 with 95% interval -0.19 to 1.07 
-Hyper-SD (sigma_tau) = 0.507 with 95% interval 0.015 to 1.624 
-Total pooling (1 - I^2) = 0.479 with 95% interval 0.041 to 0.998 
+Hypermean (tau) =  0.47 with 95% interval -0.14 to 1.13 
+Hyper-SD (sigma_tau) = 0.516 with 95% interval 0.016 to 1.739 
+Total pooling (1 - I^2) = 0.480 with 95% interval 0.036 to 0.998 
 
 Group-specific treatment effects:
                mean   sd   2.5%  50% 97.5% pooling
-Aoki 2015     0.532 0.22  0.112 0.52  1.00    0.42
-Cirrone 2016  0.051 0.47 -1.026 0.15  0.71    0.61
-Gotoh 2014    1.006 0.63  0.193 0.83  2.53    0.70
-Hill 2018     0.442 0.18  0.073 0.44  0.81    0.36
-Kadakia 1996  0.189 0.51 -1.083 0.31  0.99    0.74
-Lee 2022      0.521 0.23  0.079 0.51  1.00    0.43
-Noviello 2023 0.413 0.23 -0.072 0.42  0.86    0.43
+Aoki 2015     0.533 0.22  0.112 0.52  1.00    0.42
+Cirrone 2016  0.057 0.46 -0.986 0.15  0.72    0.61
+Gotoh 2014    1.017 0.65  0.198 0.83  2.60    0.70
+Hill 2018     0.441 0.18  0.072 0.44  0.80    0.36
+Kadakia 1996  0.183 0.52 -1.110 0.30  0.99    0.74
+Lee 2022      0.520 0.23  0.079 0.51  1.01    0.43
+Noviello 2023 0.415 0.23 -0.069 0.42  0.87    0.43
 
