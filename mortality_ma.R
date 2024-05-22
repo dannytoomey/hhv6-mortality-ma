@@ -8,10 +8,12 @@ options(mc.cores = parallel::detectCores())
 
 excel = read_excel('Full Dataset - Mortality after HCT and HHV-6.xlsx',sheet="Included studies 2023 update")
 excel <- data.frame(excel)
-excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died")]
+excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died","Stem.cell.source")]
 excel <- excel[excel$`Excluded.from.analysis.`=="No",]
+colnames(excel)[colnames(excel) == 'Stem.cell.source'] <- 'Stem cell source'
+colnames(excel)[colnames(excel) == 'Cohort.type'] <- 'Age of cohort'
 
-save_path <- paste0("local_results/",gsub(":",";",substr(Sys.time(),1,19)),"")	
+save_path <- paste0("local_results/",gsub(":",";",substr(Sys.time(),1,19)),"")
 
 if(!file.exists("local_results/")){
 	dir.create("local_results/")
@@ -30,18 +32,20 @@ om_data = excel[excel$Outcome=="OM",]
 rm_data = excel[excel$Outcome=="RM",]
 nrm_data = excel[excel$Outcome=="NRM",]
 
-peds_data = excel[excel$Outcome=="OM"&excel$`Cohort.type`=="Pediatric",]
-adult_data = excel[excel$Outcome=="OM"&excel$`Cohort.type`=="Adult",]
-both_data = excel[excel$Outcome=="OM"&excel$`Cohort.type`=="Both",]
-
-list <- c("om_data","rm_data","nrm_data","peds_data","adult_data","both_data")
+list <- c("om_data","rm_data","nrm_data")
 
 for(i in list){
 	if(i == "om_data"){
 		data <- om_data
 		title <- "HHV-6 and OM"
 		rma_pdf <- "/plots/1 - RMA HHV-6 OM.pdf"
+		stem_cell_rma_pdf <- "/plots/1 - RMA HHV-6 OM by Stem Cell Source.pdf"
+		age_rma_pdf <- "/plots/1 - RMA HHV-6 OM by Age.pdf"
+		funnel_rma_pdf <- "/plots/1 - Funnel Plot HHV-6 OM.pdf"
 		rma_title <- "Odds of Overall Mortality with HHV-6 positivity"
+		stem_cell_rma_title <- "Odds of Overall Mortality with HHV-6 positivity by Stem Cell Source"
+		age_rma_title <- "Odds of Overall Mortality with HHV-6 positivity by Age"
+		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Overall Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Overall Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/1 - Bayes HHV-6 OM.pdf"
 		text_save <- "/details/1 - om model details.txt"
@@ -54,7 +58,13 @@ for(i in list){
 		data <- rm_data
 		title <- "HHV-6 and RM"
 		rma_pdf <- "/plots/2 - RMA HHV-6 RM.pdf"
+		stem_cell_rma_pdf <- "/plots/2 - RMA HHV-6 RM by Stem Cell Source.pdf"
+		age_rma_pdf <- "/plots/2 - RMA HHV-6 RM by Age.pdf"
+		funnel_rma_pdf <- "/plots/2 - Funnel Plot HHV-6 RM.pdf"
 		rma_title <- "Odds of Relapse Mortality with HHV-6 positivity"
+		stem_cell_rma_title <- "Odds of Relapse Mortality with HHV-6 positivity by Stem Cell Source"
+		age_rma_title <- "Odds of Relapse Mortality with HHV-6 positivity by Age"
+		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Relapse Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Relapse Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/2 - Bayes HHV-6 RM.pdf"
 		text_save <- "/details/2 - rm model details.txt"
@@ -67,7 +77,13 @@ for(i in list){
 		data <- nrm_data
 		title <- "HHV-6 and NRM"
 		rma_pdf <- "/plots/3 - RMA HHV-6 NRM.pdf"
+		stem_cell_rma_pdf <- "/plots/3 - RMA HHV-6 NRM by Stem Cell Source.pdf"
+		age_rma_pdf <- "/plots/3 - RMA HHV-6 NRM by Age.pdf"
+		funnel_rma_pdf <- "/plots/3 - Funnel Plot HHV-6 NRM.pdf"
 		rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity"
+		stem_cell_rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity by Stem Cell Source"
+		age_rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity by Age"
+		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Non-Relapse Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Non-Relapse Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/3 - Bayes HHV-6 NRM.pdf"
 		text_save <- "/details/3 - nrm model details.txt"
@@ -76,95 +92,127 @@ for(i in list){
 		bayes_pdf_width <- 8
 		bayes_pdf_height <- log(dim(data)[1],9)*5.25
 	}
-	if(i == "both_data"){
-		data <- both_data
-		title <- "HHV-6 and Mixed age cohort Overall Mortality"
-		rma_pdf <- "/plots/4 - RMA HHV-6 Mixed Age OM.pdf"
-		rma_title <- "Odds of Mixed age cohort Overall Mortality with HHV-6 positivity"
-		bayes_title <- ggtitle("Bayesian Aggregations: Mixed age cohort Overall and HHV-6 positivity","Posterior distributions with 95% intervals")
-		bayes_pdf <- "/plots/4 - Bayes HHV-6 Mixed Age OM.pdf"
-		text_save <- "/details/4 - both model details.txt"
-		rma_pdf_width <- 10
-		rma_pdf_height <- log(dim(data)[1],9)*5.25
-		bayes_pdf_width <- 8
-		bayes_pdf_height <- log(dim(data)[1],9)*5.25
-	}
-	if(i == "adult_data"){
-		data <- adult_data
-		title <- "HHV-6 and Adult Overall Mortality"
-		rma_pdf <- "/plots/5 - RMA HHV-6 Adult OM.pdf"
-		rma_title <- "Odds of Adult Overall Mortality with HHV-6 positivity"
-		bayes_title <- ggtitle("Bayesian Aggregations: Adult Overall Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
-		bayes_pdf <- "/plots/5 - Bayes HHV-6 Adult OM.pdf"
-		text_save <- "/details/5 - adult model details.txt"
-		rma_pdf_width <- 10
-		rma_pdf_height <- log(dim(data)[1],9)*5.25
-		bayes_pdf_width <- 8
-		bayes_pdf_height <- log(dim(data)[1],9)*5.25
-	}
-	if(i == "peds_data"){
-		data <- peds_data
-		title <- "HHV-6 and Pediatric Overall Mortality"
-		rma_pdf <- "/plots/6 - RMA HHV-6 Peds OM.pdf"
-		rma_title <- "Odds of Pediatric Overall Mortality with HHV-6 positivity"
-		bayes_title <- ggtitle("Bayesian Aggregations: Pediatric Overall Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
-		bayes_pdf <- "/plots/6 - Bayes HHV-6 Peds OM.pdf"
-		text_save <- "/details/6 - peds model details.txt"
-		rma_pdf_width <- 10
-		rma_pdf_height <- log(dim(data)[1],9)*5.25
-		bayes_pdf_width <- 8
-		bayes_pdf_height <- log(dim(data)[1],9)*5.25
-	}
 
-	meta_bin <- metabin(event.e = as.numeric(`HHV6.Positive.Died`), 
-		                n.e = as.numeric(`HHV6.Positive.Analyzed`),
-		                event.c = as.numeric(`HHV6.Negative.Died`),
-		                n.c = as.numeric(`HHV6.Negative.Analyzed`),
-		                studlab = Study,
-		                data = data,
-		                sm = "OR",
-		                method = "MH",
-		                MH.exact = TRUE,
-		                fixed = FALSE,
-		                random = TRUE,
-		                method.tau = "PM",
-		                hakn = TRUE,
-		                title = title)
+	cat(paste0(i," ",Sys.time(),"\n"),file=paste0(save_path,text_save),append = TRUE)
 
+	meta_bin <- metabin(
+        event.e = as.numeric(`HHV6.Positive.Died`),
+        n.e = as.numeric(`HHV6.Positive.Analyzed`),
+        event.c = as.numeric(`HHV6.Negative.Died`),
+        n.c = as.numeric(`HHV6.Negative.Analyzed`),
+        studlab = Study,
+        data = data,
+        sm = "OR",
+        method = "MH",
+        MH.exact = TRUE,
+        fixed = FALSE,
+        random = TRUE,
+        method.tau = "PM",
+        hakn = TRUE,
+        title = title
+	)
+	cat("\n -- random effects model --\n\n",file=paste0(save_path,text_save),append = TRUE)
+    cat(paste0(capture.output(summary(meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
 	pdf(file = paste0(save_path,rma_pdf), width = rma_pdf_width, height = rma_pdf_height)
-	meta::forest.meta(meta_bin,
-				 	  sortvar = TE,
-	             	  print.tau2 = TRUE,
-	             	  leftlabs = c("Study", "Deaths","Total","Deaths","Total"),
-	             	  lab.e = "HHV-6 +",
-	             	  lab.c = "HHV-6 -",
+	meta::forest.meta(
+        meta_bin,
+        sortvar = TE,
+        print.tau2 = TRUE,
+        leftlabs = c("Study", "Deaths","Total","Deaths","Total"),
+        lab.e = "HHV-6 +",
+        lab.c = "HHV-6 -",
 	)
 	grid.text(rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
 
-	if(dim(data)[1] <= 10){
-		prep_ma_df <- data.frame('study'=data$Study,
-						 'a'=as.numeric(data$`HHV6.Positive.Died`),
-						 'n1'=as.numeric(data$`HHV6.Positive.Analyzed`),
-						 'c'=as.numeric(data$`HHV6.Negative.Died`),
-						 'n2'=as.numeric(data$`HHV6.Negative.Analyzed`))
-		baggr_bin <- baggr(prep_ma_df,group="study",effect="logOR",pooling="partial",iter=20000,chains=10)
+    stem_cell_meta_bin <- metabin(
+        event.e = as.numeric(`HHV6.Positive.Died`),
+        n.e = as.numeric(`HHV6.Positive.Analyzed`),
+        event.c = as.numeric(`HHV6.Negative.Died`),
+        n.c = as.numeric(`HHV6.Negative.Analyzed`),
+        studlab = Study,
+        subgroup= `Stem cell source`,
+        data = data,
+        sm = "OR",
+        method = "MH",
+        MH.exact = TRUE,
+        fixed = FALSE,
+        random = TRUE,
+        method.tau = "PM",
+        hakn = TRUE,
+        title = title
+    )
+    cat("\n -- stem cell source subgroup analysis --\n\n",file=paste0(save_path,text_save),append = TRUE)
+    cat(paste0(capture.output(summary(stem_cell_meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+   	pdf(file = paste0(save_path,stem_cell_rma_pdf), width = rma_pdf_width, height = rma_pdf_height*1.4)
+   	meta::forest.meta(
+        stem_cell_meta_bin,
+        sortvar = TE,
+        print.tau2 = TRUE,
+        leftlabs = c("Study", "Deaths","Total","Deaths","Total"),
+        lab.e = "HHV-6 +",
+        lab.c = "HHV-6 -",
+   	)
+   	grid.text(stem_cell_rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
+    dev.off()
+
+    age_meta_bin <- metabin(
+        event.e = as.numeric(`HHV6.Positive.Died`),
+        n.e = as.numeric(`HHV6.Positive.Analyzed`),
+        event.c = as.numeric(`HHV6.Negative.Died`),
+        n.c = as.numeric(`HHV6.Negative.Analyzed`),
+        studlab = Study,
+        subgroup= `Age of cohort`,
+        data = data,
+        sm = "OR",
+        method = "MH",
+        MH.exact = TRUE,
+        fixed = FALSE,
+        random = TRUE,
+        method.tau = "PM",
+        hakn = TRUE,
+        title = title
+    )
+    cat("\n -- age source subgroup analysis --\n\n",file=paste0(save_path,text_save),append = TRUE)
+    cat(paste0(capture.output(summary(age_meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+   	pdf(file = paste0(save_path,age_rma_pdf), width = rma_pdf_width, height = rma_pdf_height*1.4)
+   	meta::forest.meta(
+        age_meta_bin,
+        sortvar = TE,
+        print.tau2 = TRUE,
+        leftlabs = c("Study", "Deaths","Total","Deaths","Total"),
+        lab.e = "HHV-6 +",
+        lab.c = "HHV-6 -",
+   	)
+   	grid.text(age_rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
+    dev.off()
+
+    if(dim(data)[1] >= 10){
+        # peters bias used for binary data
+        cat("\n -- publication bias --\n\n",file=paste0(save_path,text_save),append = TRUE)
+        cat(paste0(capture.output(print(metabias(meta_bin, method.bias = "peters"))),"\n"),file=paste0(save_path,text_save),append = TRUE)
+        pdf(file = paste0(save_path,funnel_rma_pdf), width = 10, height = 10)
+        meta::funnel(meta_bin,studlab=TRUE)
+        grid.text(funnel_rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
+        dev.off()
+    }
+
+    if(dim(data)[1] <= 10){
+    	prep_ma_df <- data.frame(
+                'study'=data$Study,
+                'a'=as.numeric(data$`HHV6.Positive.Died`),
+                'n1'=as.numeric(data$`HHV6.Positive.Analyzed`),
+                'c'=as.numeric(data$`HHV6.Negative.Died`),
+                'n2'=as.numeric(data$`HHV6.Negative.Analyzed`)
+    	)
+    	baggr_bin <- baggr(prep_ma_df,group="study",effect="logOR",pooling="partial",iter=20000,chains=10)
+        cat("\n -- bayesian aggregation model --\n\n",file=paste0(save_path,text_save),append = TRUE)
+        cat("- Model fit (note: Rhat > 1.05 means model CANNOT be interpreted) - \n",file=paste0(save_path,text_save),append = TRUE)
+        cat(paste0(capture.output(print(baggr_bin$fit)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+        cat("\n- Model results - \n",file=paste0(save_path,text_save),append = TRUE)
+        cat(paste0(capture.output(print(baggr_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
 		p <- plot(baggr_bin,hyper=TRUE,vline=FALSE,style="areas") + bayes_title
-		pdf(file = paste0(save_path,bayes_pdf), width = bayes_pdf_width, height = bayes_pdf_height, onefile=FALSE)
-		print(p)
-		dev.off()
+    	pdf(file = paste0(save_path,bayes_pdf), width = bayes_pdf_width, height = bayes_pdf_height, onefile=FALSE)
+    	print(p)
+    	dev.off()
 	}
-
-	sink(paste0(save_path,text_save))
-	print(paste0(i," ",Sys.time()))
-	print("random effects model --")
-	print(summary(meta_bin))
-	if(dim(data)[1] <= 10){ 
-		print("")
-		print("bayesian aggregation model --")
-		print(baggr_bin) 
-	}
-	sink()
-
-	print(summary(meta_bin))
-
 }

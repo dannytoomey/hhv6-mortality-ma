@@ -4,8 +4,10 @@
 *.xlsx
 *.csv
 
+BMT Revisions/
 BMT Submission/
 local_results/
+old/
 
-!/Model details and plots 2024-02-01/plots/*.pdf
+!/Model details and plots 2024-05-20/plots/*.pdf
 !Full Dataset - Mortality after HCT and HHV-6.xlsx
