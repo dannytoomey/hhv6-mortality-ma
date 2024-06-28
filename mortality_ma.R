@@ -1,17 +1,18 @@
 # great book on meta-analyses - https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/
 # good reference for interpreting bayesian results - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10021079/
 
-lapply(c("readxl","esc","meta","dplyr","metafor","grid","brms","baggr","ggplot2"),require,character.only=TRUE)
+lapply(c("readxl","esc","meta","dplyr","metafor","grid","brms","baggr","rstan","ggplot2"),require,character.only=TRUE)
 
 #options(error = function() traceback(3))
 options(mc.cores = parallel::detectCores())
 
 excel = read_excel('Full Dataset - Mortality after HCT and HHV-6.xlsx',sheet="Included studies 2023 update")
 excel <- data.frame(excel)
-excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died","Stem.cell.source")]
+excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died","Stem.cell.source","Follow.up.period")]
 excel <- excel[excel$`Excluded.from.analysis.`=="No",]
 colnames(excel)[colnames(excel) == 'Stem.cell.source'] <- 'Stem cell source'
 colnames(excel)[colnames(excel) == 'Cohort.type'] <- 'Age of cohort'
+colnames(excel)[colnames(excel) == 'Follow.up.period'] <- 'Follow up period'
 
 save_path <- paste0("local_results/",gsub(":",";",substr(Sys.time(),1,19)),"")
 
@@ -41,10 +42,12 @@ for(i in list){
 		rma_pdf <- "/plots/1 - RMA HHV-6 OM.pdf"
 		stem_cell_rma_pdf <- "/plots/1 - RMA HHV-6 OM by Stem Cell Source.pdf"
 		age_rma_pdf <- "/plots/1 - RMA HHV-6 OM by Age.pdf"
+		fup_rma_pdf <- "/plots/1 - RMA HHV-6 OM by Follow-up Period.pdf"
 		funnel_rma_pdf <- "/plots/1 - Funnel Plot HHV-6 OM.pdf"
 		rma_title <- "Odds of Overall Mortality with HHV-6 positivity"
 		stem_cell_rma_title <- "Odds of Overall Mortality with HHV-6 positivity by Stem Cell Source"
 		age_rma_title <- "Odds of Overall Mortality with HHV-6 positivity by Age"
+		fup_rma_title <- "Odds of Overall Mortality with HHV-6 positivity by Follow-up Period"
 		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Overall Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Overall Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/1 - Bayes HHV-6 OM.pdf"
@@ -60,10 +63,12 @@ for(i in list){
 		rma_pdf <- "/plots/2 - RMA HHV-6 RM.pdf"
 		stem_cell_rma_pdf <- "/plots/2 - RMA HHV-6 RM by Stem Cell Source.pdf"
 		age_rma_pdf <- "/plots/2 - RMA HHV-6 RM by Age.pdf"
+		fup_rma_pdf <- "/plots/2 - RMA HHV-6 RM by Follow-up Period.pdf"
 		funnel_rma_pdf <- "/plots/2 - Funnel Plot HHV-6 RM.pdf"
 		rma_title <- "Odds of Relapse Mortality with HHV-6 positivity"
 		stem_cell_rma_title <- "Odds of Relapse Mortality with HHV-6 positivity by Stem Cell Source"
 		age_rma_title <- "Odds of Relapse Mortality with HHV-6 positivity by Age"
+		fup_rma_title <- "Odds of Relapse Mortality with HHV-6 positivity by Follow-up Period"
 		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Relapse Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Relapse Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/2 - Bayes HHV-6 RM.pdf"
@@ -79,10 +84,12 @@ for(i in list){
 		rma_pdf <- "/plots/3 - RMA HHV-6 NRM.pdf"
 		stem_cell_rma_pdf <- "/plots/3 - RMA HHV-6 NRM by Stem Cell Source.pdf"
 		age_rma_pdf <- "/plots/3 - RMA HHV-6 NRM by Age.pdf"
+		fup_rma_pdf <- "/plots/3 - RMA HHV-6 NRM by Follow-up Period.pdf"
 		funnel_rma_pdf <- "/plots/3 - Funnel Plot HHV-6 NRM.pdf"
 		rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity"
 		stem_cell_rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity by Stem Cell Source"
 		age_rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity by Age"
+		fup_rma_title <- "Odds of Non-Relapse Mortality with HHV-6 positivity by Follow-up Period"
 		funnel_rma_title <- "Publication Bias for Studies Reporting Odds of Non-Relapse Mortality with HHV-6 positivity"
 		bayes_title <- ggtitle("Bayesian Aggregations: Non-Relapse Mortality and HHV-6 positivity","Posterior distributions with 95% intervals")
 		bayes_pdf <- "/plots/3 - Bayes HHV-6 NRM.pdf"
@@ -114,7 +121,7 @@ for(i in list){
 	cat("\n -- random effects model --\n\n",file=paste0(save_path,text_save),append = TRUE)
     cat(paste0(capture.output(summary(meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
 	pdf(file = paste0(save_path,rma_pdf), width = rma_pdf_width, height = rma_pdf_height)
-	meta::forest.meta(
+	metafor::forest(
         meta_bin,
         sortvar = TE,
         print.tau2 = TRUE,
@@ -144,7 +151,7 @@ for(i in list){
     cat("\n -- stem cell source subgroup analysis --\n\n",file=paste0(save_path,text_save),append = TRUE)
     cat(paste0(capture.output(summary(stem_cell_meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
    	pdf(file = paste0(save_path,stem_cell_rma_pdf), width = rma_pdf_width, height = rma_pdf_height*1.4)
-   	meta::forest.meta(
+   	metafor::forest(
         stem_cell_meta_bin,
         sortvar = TE,
         print.tau2 = TRUE,
@@ -175,7 +182,7 @@ for(i in list){
     cat("\n -- age source subgroup analysis --\n\n",file=paste0(save_path,text_save),append = TRUE)
     cat(paste0(capture.output(summary(age_meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
    	pdf(file = paste0(save_path,age_rma_pdf), width = rma_pdf_width, height = rma_pdf_height*1.4)
-   	meta::forest.meta(
+   	metafor::forest(
         age_meta_bin,
         sortvar = TE,
         print.tau2 = TRUE,
@@ -184,6 +191,37 @@ for(i in list){
         lab.c = "HHV-6 -",
    	)
    	grid.text(age_rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
+    dev.off()
+
+    fup_meta_bin <- metabin(
+        event.e = as.numeric(`HHV6.Positive.Died`),
+        n.e = as.numeric(`HHV6.Positive.Analyzed`),
+        event.c = as.numeric(`HHV6.Negative.Died`),
+        n.c = as.numeric(`HHV6.Negative.Analyzed`),
+        studlab = Study,
+        subgroup= `Follow up period`,
+        data = data,
+        sm = "OR",
+        method = "MH",
+        MH.exact = TRUE,
+        fixed = FALSE,
+        random = TRUE,
+        method.tau = "PM",
+        hakn = TRUE,
+        title = title
+    )
+    cat("\n -- follow-up period source subgroup analysis --\n\n",file=paste0(save_path,text_save),append = TRUE)
+    cat(paste0(capture.output(summary(fup_meta_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+   	pdf(file = paste0(save_path,fup_rma_pdf), width = rma_pdf_width, height = rma_pdf_height*1.2)
+   	metafor::forest(
+        fup_meta_bin,
+        sortvar = TE,
+        print.tau2 = TRUE,
+        leftlabs = c("Study", "Deaths","Total","Deaths","Total"),
+        lab.e = "HHV-6 +",
+        lab.c = "HHV-6 -",
+   	)
+   	grid.text(fup_rma_title, x=0.5,y=0.95, gp=gpar(fontsize=16))
     dev.off()
 
     if(dim(data)[1] >= 10){
@@ -206,13 +244,16 @@ for(i in list){
     	)
     	baggr_bin <- baggr(prep_ma_df,group="study",effect="logOR",pooling="partial",iter=20000,chains=10)
         cat("\n -- bayesian aggregation model --\n\n",file=paste0(save_path,text_save),append = TRUE)
-        cat("- Model fit (note: Rhat > 1.05 means model CANNOT be interpreted) - \n",file=paste0(save_path,text_save),append = TRUE)
-        cat(paste0(capture.output(print(baggr_bin$fit)),"\n"),file=paste0(save_path,text_save),append = TRUE)
-        cat("\n- Model results - \n",file=paste0(save_path,text_save),append = TRUE)
-        cat(paste0(capture.output(print(baggr_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
-		p <- plot(baggr_bin,hyper=TRUE,vline=FALSE,style="areas") + bayes_title
-    	pdf(file = paste0(save_path,bayes_pdf), width = bayes_pdf_width, height = bayes_pdf_height, onefile=FALSE)
-    	print(p)
-    	dev.off()
+        if (max(rstan:::summary_sim(baggr_bin$fit@sim)$rhat) > 1.05) {
+            cat("Operation terminated due to lack of chain convergence. \n",file=paste0(save_path,text_save),append = TRUE)
+        } else {
+            cat(paste0(capture.output(print(baggr_bin$fit)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+            cat("\n- Model results - \n",file=paste0(save_path,text_save),append = TRUE)
+            cat(paste0(capture.output(print(baggr_bin)),"\n"),file=paste0(save_path,text_save),append = TRUE)
+            p <- plot(baggr_bin,hyper=TRUE,vline=FALSE,style="areas") + bayes_title
+           	pdf(file = paste0(save_path,bayes_pdf), width = bayes_pdf_width, height = bayes_pdf_height, onefile=FALSE)
+           	print(p)
+           	dev.off()
+        }
 	}
 }
