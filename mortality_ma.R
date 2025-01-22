@@ -1,12 +1,12 @@
 # great book on meta-analyses - https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/
 # good reference for interpreting bayesian results - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10021079/
 
-lapply(c("readxl","esc","meta","dplyr","metafor","grid","brms","baggr","rstan","ggplot2"),require,character.only=TRUE)
+lapply(c("openxlsx","esc","meta","dplyr","metafor","grid","brms","baggr","rstan","ggplot2"),require,character.only=TRUE)
 
 #options(error = function() traceback(3))
 options(mc.cores = parallel::detectCores())
 
-excel = read_excel('Full Dataset - Mortality after HCT and HHV-6.xlsx',sheet="Included studies 2023 update")
+excel = read.xlsx('Full Dataset - Mortality after HCT and HHV-6.xlsx',sheet="Included studies 2023 update")
 excel <- data.frame(excel)
 excel <- excel[c("Study","Excluded.from.analysis.","Outcome","HHV6.Monitoring","Cohort.type","HHV6.Positive.Analyzed","HHV6.Negative.Analyzed","HHV6.Positive.Died","HHV6.Negative.Died","Stem.cell.source","Follow.up.period")]
 excel <- excel[excel$`Excluded.from.analysis.`=="No",]
